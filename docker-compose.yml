@@ -1,0 +1,110 @@
+version: "3"
+
+services:
+  mongo:
+    image: mongo
+    volumes:
+      - ./storage/mongo-data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27018:27017
+  auth:
+    build:
+      context: ./auth
+    depends_on:
+      - mongo
+    volumes:
+      - /app/node_modules
+      - ./auth:/app
+      - shared:/shared
+      - storage:/storage
+    environment:
+      MONGO_URL: mongodb://root:example@mongo:27017/streams?authSource=admin
+    ports:
+      - 8000:8000
+  query:
+    build:
+      context: ./query
+    depends_on:
+      - mongo
+    volumes:
+      - /app/node_modules
+      - ./query:/app
+      - shared:/shared
+      - storage:/storage
+    environment:
+      MONGO_URL: mongodb://root:example@mongo:27017/streams?authSource=admin
+    ports:
+      - 8002:8002
+  moderation:
+    build:
+      context: ./moderation
+    depends_on:
+      - mongo
+    volumes:
+      - /app/node_modules
+      - ./moderation:/app
+      - shared:/shared
+      - storage:/storage
+    environment:
+      MONGO_URL: mongodb://root:example@mongo:27017/streams?authSource=admin
+    ports:
+      - 8004:8004
+  react-app:
+    build:
+      context: ./client
+    volumes:
+      - /app/node_modules
+      - ./client:/app
+    ports:
+      - "3000:3000"
+  stream:
+    build:
+      context: ./stream
+    depends_on:
+      - mongo
+    volumes:
+      - /app/node_modules
+      - ./stream:/app
+      - shared:/shared
+      - storage:/storage
+    environment:
+      MONGO_URL: mongodb://root:example@mongo:27017/streams?authSource=admin
+    ports:
+      - "8006:8006"
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "3050:80"
+  rtmp-sr:
+    build:
+      context: ./rtmp
+    depends_on:
+      - mongo
+    volumes:
+      - /app/node_modules
+      - ./rtmp:/app
+      - shared:/shared
+      - storage:/storage
+    environment:
+      MONGO_URL: mongodb://root:example@mongo:27017/streams?authSource=admin
+    ports:
+      - "5000:5000"
+      - "1935:1935"
+      - "8443:8443"
+volumes:
+  storage:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "./storage"
+  shared:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "./shared"

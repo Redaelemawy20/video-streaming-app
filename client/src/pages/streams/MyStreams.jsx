@@ -8,7 +8,7 @@ function MyStreams() {
     const fetchStreams = async () => {
       try {
         setLoading(true);
-        const response = await api.get(`/mystreams`);
+        const response = await api.get(`/query/mystreams`);
         setStreams(response.data);
         setLoading(false);
       } catch (error) {

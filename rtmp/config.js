@@ -10,10 +10,10 @@ module.exports = {
   http: {
     port: 8000,
     allow_origin: "*",
-    mediaroot: "./media",
+    mediaroot: "../storage/media",
   },
   trans: {
-    ffmpeg: "/usr/bin/ffmpeg",
+    ffmpeg: "/usr/local/bin/ffmpeg",
     tasks: [
       {
         app: "live",

@@ -1,27 +1,37 @@
-import { connect } from "react-redux";
-import { fetchStream } from "../../store/actions";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import api from "../../apis/streams";
 import flvjs from "flv.js";
-const StreamShow = ({ fetchStream, streams }) => {
+const StreamShow = () => {
   const { id } = useParams();
-  const stream = streams[id];
+  const [stream, setStream] = useState();
+  const [loading, setLoading] = useState(false);
   const videoRef = useRef();
   useEffect(() => {
-    fetchStream(id);
+    const fetchStream = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get(`/stream/${id}`);
+        setStream(response.data);
+        setLoading(false);
+      } catch (error) {
+        setLoading(false);
+      }
+    };
+    fetchStream();
   }, []);
-  console.log(streams);
+
   useEffect(() => {
     if (!stream) return;
 
     const videoElement = videoRef.current;
     if (stream.status === "STOPPED") {
-      videoElement.src = `http://localhost:5000/recorded/${id}`;
+      videoElement.src = `/stream/v/${id}`;
       return;
     }
     const flvPlayer = flvjs.createPlayer({
       type: "flv",
-      url: `http://localhost:5000/live/${id}`,
+      url: `http://localhost:3050/v/live/${id}`,
     });
     flvPlayer.attachMediaElement(videoElement);
     flvPlayer.load();
@@ -30,8 +40,8 @@ const StreamShow = ({ fetchStream, streams }) => {
     };
   }, [stream]);
 
-  if (!stream) return <div>Loading</div>;
-
+  if (loading) return <div>Loading</div>;
+  if (!loading && !stream) return <div>stream not found </div>;
   return (
     <>
       <div className="flex justify-center items-center w-full h-screen bg-gray-800">
@@ -72,7 +82,4 @@ const StreamShow = ({ fetchStream, streams }) => {
   );
 };
 
-const mapStateToProps = (state) => {
-  return { streams: state.streams };
-};
-export default connect(mapStateToProps, { fetchStream })(StreamShow);
+export default StreamShow;

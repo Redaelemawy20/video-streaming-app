@@ -2,18 +2,25 @@ import { useEffect, useState } from "react";
 import api from "../apis/streams";
 import StreamCard from "./StreamCard";
 
-const CardList = ({ status, title }) => {
+const CardList = ({ status, title, onload, start }) => {
   const [streams, setStreams] = useState([]);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const fetchStreams = async () => {
-      setLoading(true);
-      const response = await api.get(`/?status=${status}`);
-      setStreams(response.data);
-      setLoading(false);
+      try {
+        setLoading(true);
+        const response = await api.get(`/query?status=${status}`);
+        setStreams(response.data);
+        setLoading(false);
+        onload();
+      } catch (error) {
+        setLoading(false);
+        onload();
+      }
     };
-    fetchStreams();
-  }, []);
+    if (start) fetchStreams();
+  }, [start]);
+  if (!start) return <div>...</div>;
   const showList = () => {
     if (!streams.length) {
       if (loading) return <h3>loading...</h3>;

@@ -3,20 +3,13 @@ const {
   generateStreamKey,
   STREAM_ALLOWED_PROPS,
   STREAM_STATUS,
-} = require("../../shared/models/stream");
-const _ = require("lodash");
+} = require("../shared/models/stream");
+const _pick = require("../shared/utils/_pick");
 
 const streamBodyToSave = (body) => {
-  return _.pick(body, ["name", "description"]);
+  return _pick(body, ["name", "description"]);
 };
 
-const mystreams = async (req, res) => {
-  const streams = await Stream.find({ owner: req.user._id }).select("-key");
-  res.send(streams);
-};
-const getStream = async (req, res) => {
-  res.send(_.pick(req.stream, STREAM_ALLOWED_PROPS));
-};
 
 const storeStream = async (req, res) => {
   const body = streamBodyToSave(req.body);
@@ -33,7 +26,7 @@ const updateStream = async (req, res) => {
   const body = streamBodyToSave(req.body);
   req.stream.set(body);
   await req.stream.save();
-  res.status(200).send(_.pick(req.stream, STREAM_ALLOWED_PROPS));
+  res.status(200).send(_pick(req.stream, STREAM_ALLOWED_PROPS));
 };
 const startStream = async (req, res) => {
   const { stream } = req;
@@ -41,7 +34,7 @@ const startStream = async (req, res) => {
   stream.status = STREAM_STATUS.STARTED;
   stream.key = streamKey;
   await stream.save();
-  res.send(_.pick(stream, [...STREAM_ALLOWED_PROPS, "key"]));
+  res.send(_pick(stream, [...STREAM_ALLOWED_PROPS, "key"]));
 };
 const deleteStream = async (req, res) => {
   await req.stream.delete();
@@ -49,10 +42,9 @@ const deleteStream = async (req, res) => {
 };
 
 module.exports = {
-  getStream,
+
   storeStream,
   updateStream,
   deleteStream,
   startStream,
-  mystreams,
 };

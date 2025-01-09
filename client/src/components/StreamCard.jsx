@@ -50,7 +50,7 @@ const StreamCard = ({ stream, user }) => {
         {stream.image && (
           <Link className="group" to={`show/${stream._id}`}>
             <img
-              src={`http://localhost:3001/file/${stream.image}`}
+              src={`/query/${stream.image}`}
               alt="Stream Cover"
               className="w-full h-40 rounded-lg object-cover"
             />
@@ -67,8 +67,9 @@ const StreamCard = ({ stream, user }) => {
             className="w-10 h-10 rounded-full object-cover mr-3"
           />
           <div>
-            <p className="text-white text-sm font-medium mb-1">Stream Owner</p>
-            <p className="text-purple-300 text-xs">Stream Owner Name</p>
+            <p className="text-white text-sm font-medium mb-1">
+              {stream.owner.name}
+            </p>
           </div>
         </div>
       </div>

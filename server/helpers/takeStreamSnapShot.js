@@ -1,6 +1,6 @@
 const ffmpeg = require("fluent-ffmpeg");
-ffmpeg.setFfprobePath("F:/Programs/ffmpeg/bin/ffprobe.exe");
-ffmpeg.setFfmpegPath("F:/Programs/ffmpeg/bin/ffmpeg.exe");
+ffmpeg.setFfprobePath("/usr/local/bin/ffprobe.exe");
+ffmpeg.setFfmpegPath("/usr/local/bin/ffmpeg.exe");
 
 async function takeStreamSnapShot(stream) {
   const streamUrl = `http://localhost:8000/live/${stream.key}.flv`;

@@ -9,7 +9,7 @@ import {
   STREAM_UPDATED,
   STREAM_DELETED,
 } from "./actionTypes";
-import streams from "../../apis/streams";
+import api from "../../apis/streams";
 
 export const fetchUser = () => {
   return (dispatch) => {
@@ -30,7 +30,7 @@ export const fetchUser = () => {
 /* auth actions */
 export const login = (payload) => {
   return async (dispatch) => {
-    const response = await streams.post("/auth", payload);
+    const response = await api.post("/auth", payload);
     const token = response.headers.get("x-auth-token");
     localStorage.setItem("credentials", token);
 
@@ -53,7 +53,7 @@ export const createStream = (formValues) => {
   return async (dispatch, getState) => {
     const { sub: userId } = getState().auth.user;
 
-    const response = await streams.post("/", { ...formValues, userId });
+    const response = await api.post("/moderation", { ...formValues, userId });
     dispatch({
       type: STREAM_CREATED,
       payload: response.data,
@@ -62,7 +62,7 @@ export const createStream = (formValues) => {
 };
 export const fetchStreams = (status = "") => {
   return async (dispatch) => {
-    const response = await streams.get(`/?status=${status}`);
+    const response = await api.get(`/query?status=${status}`);
     dispatch({
       type: STREAMS_FETCHED,
       payload: response.data,
@@ -71,7 +71,7 @@ export const fetchStreams = (status = "") => {
 };
 export const fetchStream = (id) => {
   return async (dispatch) => {
-    const response = await streams.get(`/${id}`);
+    const response = await api.get(`/moderation/${id}`);
     dispatch({
       type: STREAM_FETCHED,
       payload: response.data,
@@ -80,7 +80,7 @@ export const fetchStream = (id) => {
 };
 export const editStream = (id, formValues) => {
   return async (dispatch) => {
-    const response = await streams.put(`/${id}`, formValues);
+    const response = await api.put(`/moderation/${id}`, formValues);
     dispatch({
       type: STREAM_UPDATED,
       payload: response.data,
@@ -89,7 +89,7 @@ export const editStream = (id, formValues) => {
 };
 export const deleteStream = (id) => {
   return async (dispatch) => {
-    await streams.delete(`/${id}`);
+    await api.delete(`/moderation/${id}`);
     dispatch({
       type: STREAM_DELETED,
     });
@@ -98,7 +98,7 @@ export const deleteStream = (id) => {
 
 export const startStream = (id) => {
   return async (dispatch) => {
-    const response = await streams.put(`/${id}/start`);
+    const response = await api.put(`/moderation/${id}/start`);
     dispatch({
       type: STREAM_UPDATED,
       payload: response.data,

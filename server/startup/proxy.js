@@ -5,7 +5,7 @@ const { STREAM_STATUS } = require("../models/stream");
 const proxyServer = express();
 const proxy = httpProxy.createProxyServer();
 const cors = require("cors");
-const stream = require("../middleware/stream");
+const stream = require("../../../server/middleware/stream");
 
 proxyServer.use(cors());
 
